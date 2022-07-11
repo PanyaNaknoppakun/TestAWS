@@ -12,7 +12,10 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import com.amazonaws.ClientConfiguration
 import com.amazonaws.Protocol
+import com.amazonaws.auth.AWSCredentials
+import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.auth.BasicSessionCredentials
+import com.amazonaws.internal.StaticCredentialsProvider
 import com.amazonaws.mobile.config.AWSConfiguration
 import com.amazonaws.mobileconnectors.s3.transferutility.*
 import com.amazonaws.regions.Region
@@ -33,6 +36,11 @@ class MainActivity : Activity()  {
     var secretAccessKey= "MIglJhVFx2ZMQrnxe1H6XBpEV7dYMqvN4tj-3kAZJ-s"
     var sessionToken = "CgNkZXYSBXVzZXIxGhRBUk9BQzUyRDRDNjMxOEI1QUM3MSIbdXJuOmVjczppYW06OmRldjpyb2xlL3VzZXIxKhRBU0lBRDIxMkZERkRDQjg0NkZERjJQTWFzdGVyS2V5UmVjb3JkLTc1YzgyODZhZTFiYjkyYjcxZTRiY2QyZDgxNWFkM2VmY2RjMzllMThkNzhhZTk3ZWYxODBiODA2ZWQ2MTljMzE45LT2hZowUgV1c2VyMWjx_eGVBg"
     val URL_GET_TOKEN = "https://dddb-124-120-36-179.ap.ngrok.io/api/v1/user/sts"
+
+    //for test start
+    var accessKeyId_test = "AKIA4JKJ75FNTZAUO7NL"
+    var secretAccessKey_test= "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"
+    //for test end
 
     var progressdialog: ProgressDialog? = null
 
@@ -59,16 +67,20 @@ class MainActivity : Activity()  {
         applicationContext.startService(Intent(applicationContext, TransferService::class.java))
 
         btn_upload.setOnClickListener {
-            if (userId.text.toString().trim().isNotEmpty()) {
-                getToken(object : Listener {
-                    override fun completed() {
-                        uploadWithTransferUtility()
-                    }
+            //for test start
+            uploadWithTransferUtility()
+            //for test end
 
-                    override fun error() {
-                    }
-                })
-            }
+//            if (userId.text.toString().trim().isNotEmpty()) {
+//                getToken(object : Listener {
+//                    override fun completed() {
+//                        uploadWithTransferUtility()
+//                    }
+//
+//                    override fun error() {
+//                    }
+//                })
+//            }
         }
         btn_download.setOnClickListener {
             if (userId.text.toString().trim().isNotEmpty()) {
@@ -117,17 +129,13 @@ class MainActivity : Activity()  {
         val file_name = file_name.text.toString().trim()
         val userId = userId.text.toString().trim()
         val bucketName = bucket_name.text.toString().trim()
-//        secret_key?.let {
-//            if (!it.isEmpty()) {
-//                accessKeyId = it
-//            }
-//        }
-//        access_key?.let {
-//            if (!it.isEmpty()) {
-//                secretAccessKey = it
-//            }
-//        }
-        val credentials = BasicSessionCredentials(accessKeyId, secretAccessKey, sessionToken)
+
+//        val credentials = BasicSessionCredentials(accessKeyId, secretAccessKey, sessionToken)
+
+        //for test start
+        val credentials = BasicAWSCredentials(accessKeyId_test, secretAccessKey_test)
+        //for test end
+
 
         val configuration = ClientConfiguration()
         configuration.maxErrorRetry = 3
@@ -137,13 +145,22 @@ class MainActivity : Activity()  {
         configuration.maxConnections = 10 // 最大并发请求，默认10个
         val region: Region = Region.getRegion(Regions.AP_SOUTHEAST_1)
         val s3Client = AmazonS3Client(credentials, region, configuration)
-        s3Client.endpoint = "https://s3.ecsce.tsaw.dev/$bucketName"
 
+//        s3Client.endpoint = "https://s3.ecsce.tsaw.dev/$bucketName"
+//        val transferUtility = TransferUtility.builder()
+//                .s3Client(s3Client)
+//            .defaultBucket("")
+//            .context(applicationContext)
+//                .build()
+
+
+        //for test start
         val transferUtility = TransferUtility.builder()
-                .s3Client(s3Client)
-            .defaultBucket("")
+            .s3Client(s3Client)
+            .defaultBucket("cloudsync-3385")
             .context(applicationContext)
-                .build()
+            .build()
+        // for test end
 
         val file = File(applicationContext.filesDir, "$file_name.txt")
         try {
@@ -201,7 +218,11 @@ class MainActivity : Activity()  {
         val userId = userId.text.toString().trim()
         val bucketName = bucket_name.text.toString().trim()
 
-        val credentials = BasicSessionCredentials(accessKeyId, secretAccessKey, sessionToken)
+//        val credentials = BasicSessionCredentials(accessKeyId, secretAccessKey, sessionToken)
+
+        //for test start
+        val credentials = BasicAWSCredentials(accessKeyId_test, secretAccessKey_test)
+        //for test end
 
         val configuration = ClientConfiguration()
         configuration.maxErrorRetry = 3
@@ -211,12 +232,22 @@ class MainActivity : Activity()  {
         configuration.maxConnections = 10 // 最大并发请求，默认10个
         val region: Region = Region.getRegion(Regions.AP_SOUTHEAST_1)
         val s3Client = AmazonS3Client(credentials, region, configuration)
-        s3Client.endpoint = "https://s3.ecsce.tsaw.dev/$bucketName"
+
+//        s3Client.endpoint = "https://s3.ecsce.tsaw.dev/$bucketName"
+//        val transferUtility = TransferUtility.builder()
+//            .s3Client(s3Client)
+//            .defaultBucket("")
+//            .context(applicationContext)
+//            .build()
+
+        //for test start
         val transferUtility = TransferUtility.builder()
             .s3Client(s3Client)
-            .defaultBucket("")
+            .defaultBucket("cloudsync-3385")
             .context(applicationContext)
             .build()
+        // for test end
+
           val downloadObserver = transferUtility.download(
         "$file_name",
         File(applicationContext.filesDir, "$file_name"))
